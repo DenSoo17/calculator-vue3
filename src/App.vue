@@ -6,7 +6,7 @@
       <button
         v-for="btn in buttons"
         :key="btn.value"
-        @click="update(btn.value)"
+        @click="update(btn)"
         :class="`button button_${btn.type || 'default'}`"
       >
         {{ btn.value }}
@@ -46,18 +46,27 @@ const buttons = [
   { value: "=", type: "equals" },
 ];
 
-const update = (val) => {
-  if (val == "AC") {
+const update = (btn) => {
+  if (btn.type == "clear") {
     return (display.value = "");
   }
-  if (val == "DEL") {
+  if (btn.type == "delete") {
     return (display.value = display.value.slice(0, -1));
   }
-  if (val == "=") {
+  if (btn.type == "equals") {
     return (display.value = eval(display.value));
   }
 
-  display.value += val;
+  const lastChar = display.value.slice(-1);
+  const lastCharISOperator = buttons.some(
+    (b) => b.value == lastChar && b.type == "operator"
+  );
+
+  if (lastCharISOperator && btn.type == "operator") {
+    return;
+  }
+
+  display.value += btn.value;
 };
 </script>
 
