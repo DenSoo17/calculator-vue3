@@ -40,9 +40,9 @@ const buttons = [
   { value: "3" },
   { value: "+", type: "operator" },
 
-  { value: "000" },
-  { value: "00" },
-  { value: "0" },
+  { value: "000", type: "almostOperator" },
+  { value: "00", type: "almostOperator" },
+  { value: "0", type: "almostOperator" },
   { value: "=", type: "equals" },
 ];
 
@@ -54,7 +54,7 @@ const update = (btn) => {
     return (display.value = display.value.slice(0, -1));
   }
   if (btn.type == "equals") {
-    return (display.value = eval(display.value));
+    return (display.value = eval(display.value).toString());
   }
 
   const lastChar = display.value.slice(-1);
@@ -62,8 +62,17 @@ const update = (btn) => {
     (b) => b.value == lastChar && b.type == "operator"
   );
 
-  if (lastCharISOperator && btn.type == "operator") {
+  if (
+    lastCharISOperator &&
+    (btn.type == "operator" || btn.type == "almostOperator")
+  ) {
     return;
+  }
+
+  const isLastCharNumeric = !isNaN(lastChar);
+
+  if (isLastCharNumeric && btn.type == "operator") {
+    return (display.value += btn.value);
   }
 
   display.value += btn.value;
